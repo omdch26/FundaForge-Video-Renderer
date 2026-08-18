@@ -32,10 +32,11 @@ export const CTACard: React.FC<CardProps & { cta?: { tier: number; on_screen?: s
       </h2>
 
       {body ? (
-        <p style={{ ...css(TYPE.body), color: PALETTE.white, opacity: 0.85,
-                    marginTop: 32, maxWidth: 820, ...riseIn(next, 18) }}>
-          {body}
-        </p>
+        <div style={{ ...riseIn(next, 18), marginTop: 32 }}>
+          <p style={{ ...css(TYPE.body), color: PALETTE.white, opacity: 0.85, maxWidth: 820 }}>
+            {body}
+          </p>
+        </div>
       ) : null}
 
       <div style={{ height: 4, width: 220, background: accent, marginTop: 44, ...drawRule(rule) }} />
