@@ -7,8 +7,8 @@ season:
 
   # PIN THESE. Audition in the ElevenLabs Voice Library, then paste the ID.
   # Criteria: British, 25-35, energetic not hyped, crisp consonants, naturally quick.
-  voice_id: ""            # <-- REQUIRED before Phase 3
-  model_id: ""            # <-- pin the quality model, NOT turbo
+  voice_id: "Qc0h5B5Mqs8oaH4sFZ9X"
+  model_id: "eleven_multilingual_v2"   # quality model, most stable on long-form generation — not Turbo/Flash
 
   music: assets/music/season_bed.mp3
   duration_target: [45, 75]
@@ -16,7 +16,11 @@ season:
   cta_tier_default: 1
   playlist: "Seasons — Interview Prep"
   landing_url: ""         # Semester Pass page — required for tier-2 CTA
-  human_script_review: false
+
+  # MANDATORY, flipped 18 Aug 2026. Was false under deterministic mapping;
+  # now LLM-generated same as blueprint, same risk category. See CLAUDE.md
+  # "Human script review" under LOCKED DECISIONS.
+  human_script_review: true
 
 blueprint:
   accent: amber
@@ -24,8 +28,8 @@ blueprint:
   trap_slide_type: "Regulator's question"
 
   # Criteria: British, 35-50, measured, lower pitch, unhurried, authoritative.
-  voice_id: ""            # <-- REQUIRED before Phase 3
-  model_id: ""
+  voice_id: "1aP69VftkGksPi01itpR"
+  model_id: "eleven_multilingual_v2"   # quality model, most stable on long-form generation — not Turbo/Flash
 
   music: assets/music/blueprint_bed.mp3
   duration_target: [90, 150]
