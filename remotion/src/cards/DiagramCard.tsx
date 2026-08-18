@@ -72,6 +72,10 @@ const containerStyleFor = (mode: FitMode): React.CSSProperties => {
 const svgWrapperStyleFor = (mode: FitMode): React.CSSProperties => {
   if (mode === "crop") {
     // Scale so the SVG's height fills the taller 3:4 box, center-crop the width.
+    // KNOWN BUG: this currently renders blank. stripFixedDimensions() strips the
+    // inner <svg>'s own width/height attrs, so with only a viewBox left on the
+    // child, "width: auto" here resolves to zero. Not the default and no
+    // consumer currently passes fitMode="crop" — left unfixed, documented only.
     return { width: "auto", height: "100%", position: "absolute", left: "50%", transform: "translateX(-50%)" };
   }
   return { width: "100%", height: "100%" };
