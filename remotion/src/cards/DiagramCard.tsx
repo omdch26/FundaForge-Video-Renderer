@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AbsoluteFill, cancelRender, continueRender, delayRender, staticFile } from "remotion";
 import { PALETTE } from "../brand";
 import { SAFE_PADDING, TYPE, css } from "../layout";
-import { useEnter, riseIn, wipeIn } from "../motion";
+import { useEnter, riseIn, wipeIn, scaleIn } from "../motion";
 import type { CardProps } from "../types";
 
 /**
@@ -15,6 +15,24 @@ import type { CardProps } from "../types";
  * SVGs are inlined rather than placed in an <img> for two reasons: their
  * internals become animatable, and their text inherits our registered fonts
  * (they reference "Inter" and "JetBrains Mono" by name — see fonts.ts).
+ *
+ * asset.animate (schema: none | draw | reveal | scale_in — added 18 Aug 2026,
+ * previously defined but not read anywhere in this component):
+ *   - "draw": the diagram wipes in left-to-right via clip-path, same
+ *     mechanic as headline wipeIn. Deliberately NOT true per-path
+ *     stroke-dasharray tracing — that needs each path's real rendered
+ *     length (getTotalLength(), only available once the SVG is actually in
+ *     the DOM) and behaves inconsistently across paths, filled shapes and
+ *     text labels within a diagram. A left-to-right wipe works identically
+ *     for any SVG regardless of its internal structure, and for a
+ *     left-to-right chart (a learning curve, a trend line) reads as the
+ *     line appearing over time anyway — the effect this was built for.
+ *   - "scale_in": pops up from slightly smaller while fading in — a more
+ *     deliberate, distinct entrance than the default.
+ *   - "reveal" (schema default) / "none": no extra treatment beyond the
+ *     container's own rise-and-fade below. "none" is for a diagram doing a
+ *     quick callback/recap, where a fresh dramatic entrance would fight the
+ *     pacing rather than help it.
  *
  * strip_backing_rect mirrors batch_render_season.py: every library asset carries
  * an opaque #0B0F17 rectangle, which punches a black hole through the card
@@ -89,6 +107,14 @@ export const DiagramCard: React.FC<CardProps & { fitMode?: FitMode }> = ({
 
   const head = useEnter(0, 14);
   const fig = useEnter(8, 22);
+  const drawP = useEnter(14, 40);   // only used when asset.animate === "draw"
+  const scaleP = useEnter(8, 26);   // only used when asset.animate === "scale_in"
+
+  const animateMode = asset?.animate ?? "reveal";
+  const svgMotionStyle: React.CSSProperties =
+    animateMode === "draw" ? wipeIn(drawP)
+    : animateMode === "scale_in" ? scaleIn(scaleP)
+    : {};
 
   useEffect(() => {
     if (!asset?.path) {
@@ -122,7 +148,7 @@ export const DiagramCard: React.FC<CardProps & { fitMode?: FitMode }> = ({
       >
         {svg ? (
           <div
-            style={svgWrapperStyleFor(fitMode)}
+            style={{ ...svgWrapperStyleFor(fitMode), ...svgMotionStyle }}
             // Library diagrams are trusted, in-house-authored assets read from
             // the local read-only vector folder, matching the original
             // component's own established pattern for this card.

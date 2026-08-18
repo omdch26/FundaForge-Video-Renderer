@@ -42,6 +42,14 @@ export const snapIn = (p: number) => ({
   transform: `scale(${0.94 + p * 0.06})`,
 });
 
+/** Scale up from slightly smaller, fading in — a diagram's "pop" entrance,
+ * distinct from riseIn's plain drift-up-and-fade. `from` is the starting
+ * scale; smaller values read as more of a pop, closer to 1 reads subtler. */
+export const scaleIn = (p: number, from = 0.88) => ({
+  opacity: p,
+  transform: `scale(${from + p * (1 - from)})`,
+});
+
 /** A rule that draws itself. Used under headlines and beside trap cards. */
 export const drawRule = (p: number, vertical = false) =>
   vertical ? { transform: `scaleY(${p})`, transformOrigin: "top" }
