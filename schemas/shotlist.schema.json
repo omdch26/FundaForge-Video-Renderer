@@ -31,7 +31,7 @@
       "type": "object",
       "required": ["voice_file", "voice_id", "model_id"],
       "properties": {
-        "voice_file": { "type": "string" },
+        "voice_file": { "type": ["string", "null"] },
         "voice_id":   { "type": "string", "description": "Pinned. Recorded so episode 40 can be checked against episode 1." },
         "model_id":   { "type": "string" },
         "music_file": { "type": "string" },
