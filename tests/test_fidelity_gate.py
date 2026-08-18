@@ -87,3 +87,46 @@ def test_instagram_mechanic_fails():
     ]))
     codes = {f.code for f in findings}
     assert "IG_KEYWORD" in codes or "IG_SAVE" in codes
+
+
+def test_fabricated_number_warns():
+    unit = _bp34()
+    findings = fidelity.check(unit, _script([
+        {"slide_refs": [1], "voiceover": "Delete me. The bank cannot."},
+        {"slide_refs": [4], "voiceover":
+            "Retention usually wins, narrowly, for those specific records. "
+            "The bank must keep them for exactly eleven years."},
+        {"slide_refs": [9], "voiceover":
+            "Name which records are retained under which duty. It depends who is asking."},
+    ]))
+    codes = {f.code for f in findings}
+    assert "POSSIBLE_FABRICATION" in codes
+    warn_findings = [f for f in findings if f.code == "POSSIBLE_FABRICATION"]
+    assert all(f.severity == "warn" for f in warn_findings)
+
+
+def test_no_fabrication_on_faithful_script():
+    unit = _bp34()
+    findings = fidelity.check(unit, _script([
+        {"slide_refs": list(range(1, 9)), "voiceover":
+            "Delete me. The bank cannot. Retention usually wins, narrowly, and only for "
+            "those specific records."},
+        {"slide_refs": [9, 10], "voiceover":
+            "Name which records are retained under which duty. It depends who is asking."},
+    ]))
+    assert "POSSIBLE_FABRICATION" not in {f.code for f in findings}
+
+
+def test_fabrication_check_is_never_fatal():
+    unit = _bp34()
+    findings = fidelity.check(unit, _script([
+        {"slide_refs": [1], "voiceover": "Delete me. The bank cannot."},
+        {"slide_refs": [4], "voiceover":
+            "Retention usually wins, narrowly, for those specific records, "
+            "for a mandatory period of seven-hundred days."},
+        {"slide_refs": [9], "voiceover":
+            "Name which records are retained under which duty. It depends who is asking."},
+    ]))
+    fabrication_findings = [f for f in findings if f.code == "POSSIBLE_FABRICATION"]
+    assert fabrication_findings  # the invented duration was caught
+    assert all(f.severity == "warn" for f in fabrication_findings)  # never fails the build

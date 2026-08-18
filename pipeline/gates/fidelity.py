@@ -50,6 +50,22 @@ FLATTENING_MARKERS = {
     "guaranteed", "in every case", "without exception", "the only",
 }
 
+# Numbers and durations a script might invent that the source never stated.
+# Broader than digits alone: a fabricated "seven years" is as damaging as a
+# fabricated "7 years", and retention-period language is exactly where this
+# gate exists to catch invention (see Section XI / commercial boundary).
+_NUMBER_PATTERN = re.compile(r"\b\d[\d,]*\.?\d*%?\b")
+_SPELLED_DURATION_PATTERN = re.compile(
+    r"\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+    r"twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand"
+    r")(?:[\s-]\w+){0,2}[\s-](year|month|day|week)s?\b", re.IGNORECASE)
+
+# Capitalised word runs, excluding sentence-initial position (crude proxy for
+# a proper noun / named example). Matches a capital letter NOT preceded by
+# sentence-ending punctuation and whitespace (or start of string).
+_PROPER_NOUN_PATTERN = re.compile(
+    r"(?<![.!?]\s)(?<!^)\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)*\b")
+
 
 @dataclass
 class Finding:
@@ -139,6 +155,51 @@ def check(unit, script: dict) -> list[Finding]:
                 "fail", code,
                 f"Script contains an Instagram-only mechanic ({code}). "
                 f"YouTube CTAs are tier 1-3 only; the comment-keyword mechanic does not port."))
+
+    findings.extend(check_fabrication(unit, script))
+
+    return findings
+
+
+def check_fabrication(unit, script: dict) -> list[Finding]:
+    """G1 extension — catches invention, not just flattening.
+
+    The existing checks above catch a real claim stated too strongly. They
+    cannot catch a NEW claim — a number, statistic, or named example the
+    source never had — because it matches no hedge/absolute pattern. Needed
+    now specifically because generation is a person (Claude, in Cowork)
+    drafting freely against the CSV, not a template filling in fixed slots;
+    there is no safe fixed-rule mapping backing this up anymore.
+
+    Deliberately WARN, never FAIL: unlike the marker-based checks above,
+    this is pattern/overlap heuristics over free text, and legitimate light
+    rephrasing ("seven-year retention" -> "seven years") will trigger false
+    positives. Advisory, same as an LLM judge would be — a human reads the
+    warning and decides, this gate does not block the build on it.
+    """
+    findings: list[Finding] = []
+    source_corpus = _norm(" ".join(f"{s.header_text} {s.body_text}" for s in unit.slides))
+
+    for scene in script.get("scenes", []):
+        voiceover = scene.get("voiceover", "")
+        slide_refs = scene.get("slide_refs", [])
+
+        candidates: set[str] = set()
+        candidates.update(m.group(0) for m in _NUMBER_PATTERN.finditer(voiceover))
+        candidates.update(m.group(0) for m in _SPELLED_DURATION_PATTERN.finditer(voiceover))
+        candidates.update(m.group(0) for m in _PROPER_NOUN_PATTERN.finditer(voiceover))
+
+        for candidate in candidates:
+            norm_candidate = _norm(candidate)
+            if not norm_candidate or len(norm_candidate) < 2:
+                continue
+            if norm_candidate in source_corpus:
+                continue
+            findings.append(Finding(
+                "warn", "POSSIBLE_FABRICATION",
+                f"Scene (slides {slide_refs}) contains {candidate!r}, which does not "
+                f"appear in the source CSV text. Confirm this traces back to the unit "
+                f"before treating it as fact — may be a fabricated detail."))
 
     return findings
 
