@@ -7,7 +7,7 @@
   "fps": 30,
   "width": 1080,
   "height": 1920,
-  "duration_frames": 450,
+  "duration_frames": 630,
   "audio": { "voice_file": null, "music_file": null, "music_gain_db": -20 },
   "scenes": [
     {
@@ -23,13 +23,20 @@
       "scene_id": 2,
       "card": "TrapCard",
       "start_frame": 180,
-      "duration_frames": 270,
+      "duration_frames": 330,
       "slide_refs": [9],
       "headline": "Which layer is your model reading?",
       "body": "Then: what does that layer guarantee, and what are you checking yourself. Teams that cannot answer the second half are trusting a promise nobody made.",
       "amber_spans": [
         { "field": "body", "start": 0, "end": 27, "reason": "regulator_question" }
       ]
+    },
+    {
+      "scene_id": 3,
+      "card": "CTACard",
+      "start_frame": 510,
+      "duration_frames": 120,
+      "slide_refs": [10]
     }
   ],
   "cta": { "tier": 1, "on_screen": "FOLLOW FOR THE NEXT ONE", "next_unit": null }
