@@ -1,0 +1,19 @@
+# Core
+pyyaml>=6.0
+python-dotenv>=1.0
+openpyxl>=3.1          # Unit_Index.xlsx
+jsonschema>=4.20       # shotlist contract validation
+
+# Audio
+elevenlabs>=1.0
+pydub>=0.25            # duration/level checks (needs ffmpeg on PATH)
+
+# Script generation — install whichever you use
+anthropic>=0.40
+# google-genai>=0.3
+
+# SVG handling
+lxml>=5.0              # strip backing rects, read font-family
+
+# Dev
+pytest>=8.0

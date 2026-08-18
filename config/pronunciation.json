@@ -1,0 +1,16 @@
+{
+  "_comment": "Applied to every generation. Spell-out or phoneme hints for terms TTS gets wrong. Expand as units surface more.",
+  "spell_out": [
+    "BFSI", "RBI", "SEBI", "KYC", "AML", "GDPR", "DPDP", "PII",
+    "SLA", "API", "GPU", "LLM", "RAG", "ETL", "SQL", "AI", "ML", "DL",
+    "CDC", "PSI", "MRM", "IRB"
+  ],
+  "replace": {
+    "SHAP": "shap",
+    "LIME": "lime",
+    "scikit-learn": "sy-kit learn",
+    "PyTorch": "pie-torch",
+    "Kubernetes": "koo-ber-net-eez"
+  },
+  "_note": "British spellings (minimising, generalisation, anonymisation) are handled by voice choice, not substitution. Do not Americanise the script to make TTS easier."
+}

@@ -1,0 +1,170 @@
+{
+  "unit_id": "S1E05",
+  "lane": "season",
+  "series": "Season 1",
+  "kicker": "MACHINE LEARNING \u00b7 INTERVIEW FOUNDATIONS",
+  "accent": "#06B6D4",
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "duration_frames": 600,
+  "audio": {
+    "voice_file": null,
+    "music_file": null,
+    "music_gain_db": -20
+  },
+  "captions": [
+    {
+      "text": "Ninety-nine",
+      "start_frame": 10,
+      "end_frame": 28
+    },
+    {
+      "text": "percent",
+      "start_frame": 28,
+      "end_frame": 44
+    },
+    {
+      "text": "on training.",
+      "start_frame": 44,
+      "end_frame": 70
+    },
+    {
+      "text": "Sixty-two",
+      "start_frame": 72,
+      "end_frame": 92
+    },
+    {
+      "text": "on test.",
+      "start_frame": 92,
+      "end_frame": 116
+    },
+    {
+      "text": "The model",
+      "start_frame": 130,
+      "end_frame": 152
+    },
+    {
+      "text": "memorised",
+      "start_frame": 152,
+      "end_frame": 180
+    },
+    {
+      "text": "instead of",
+      "start_frame": 180,
+      "end_frame": 204
+    },
+    {
+      "text": "learning.",
+      "start_frame": 204,
+      "end_frame": 236
+    },
+    {
+      "text": "Your validation",
+      "start_frame": 285,
+      "end_frame": 312
+    },
+    {
+      "text": "score keeps",
+      "start_frame": 312,
+      "end_frame": 338
+    },
+    {
+      "text": "improving.",
+      "start_frame": 338,
+      "end_frame": 362
+    },
+    {
+      "text": "Safe?",
+      "start_frame": 362,
+      "end_frame": 392,
+      "emphasis": "constraint"
+    },
+    {
+      "text": "Not if you",
+      "start_frame": 396,
+      "end_frame": 418
+    },
+    {
+      "text": "tuned against it",
+      "start_frame": 418,
+      "end_frame": 440
+    },
+    {
+      "text": "fifty times.",
+      "start_frame": 440,
+      "end_frame": 470
+    },
+    {
+      "text": "You have",
+      "start_frame": 486,
+      "end_frame": 508
+    },
+    {
+      "text": "overfitted",
+      "start_frame": 508,
+      "end_frame": 536,
+      "emphasis": "constraint"
+    },
+    {
+      "text": "the validation",
+      "start_frame": 536,
+      "end_frame": 562
+    },
+    {
+      "text": "set itself.",
+      "start_frame": 562,
+      "end_frame": 592,
+      "emphasis": "constraint"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": 1,
+      "card": "TitleCard",
+      "start_frame": 0,
+      "duration_frames": 120,
+      "slide_refs": [
+        1
+      ],
+      "headline": "99% on training. 62% on test.",
+      "body": "Diagnose that gap and you have answered the most-tested concept in your syllabus."
+    },
+    {
+      "scene_id": 2,
+      "card": "BodyCard",
+      "start_frame": 120,
+      "duration_frames": 150,
+      "slide_refs": [
+        3
+      ],
+      "headline": "The model memorised instead of learning.",
+      "body": "It found patterns specific to your training rows, including the noise. Those patterns do not exist in new data."
+    },
+    {
+      "scene_id": 3,
+      "card": "TrapCard",
+      "start_frame": 270,
+      "duration_frames": 330,
+      "slide_refs": [
+        9
+      ],
+      "headline": "Your validation score keeps improving. Safe?",
+      "body": "Not if you tuned against it fifty times. You have overfitted the validation set itself.",
+      "amber_spans": [
+        {
+          "field": "body",
+          "start": 0,
+          "end": 33,
+          "reason": "trap"
+        }
+      ]
+    }
+  ],
+  "cta": {
+    "tier": 1,
+    "on_screen": "FOLLOW FOR THE NEXT ONE",
+    "next_unit": "S1E06"
+  },
+  "_comment": "PHASE 1 DUMMY - 20s, no audio. Real S1E05 copy so the type is honestly sized. Look-and-feel review artefact, not a deliverable. Conforms to schemas/shotlist.schema.json so the contract is exercised from day one."
+}

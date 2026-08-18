@@ -1,0 +1,38 @@
+# Per-lane configuration. Accent colours are names resolved against config/brand.json.
+
+season:
+  accent: cyan
+  lane_label: "INTERVIEW TRAP"
+  trap_slide_type: "Interview trap"
+
+  # PIN THESE. Audition in the ElevenLabs Voice Library, then paste the ID.
+  # Criteria: British, 25-35, energetic not hyped, crisp consonants, naturally quick.
+  voice_id: ""            # <-- REQUIRED before Phase 3
+  model_id: ""            # <-- pin the quality model, NOT turbo
+
+  music: assets/music/season_bed.mp3
+  duration_target: [45, 75]
+  duration_warn_above: 90
+  cta_tier_default: 1
+  playlist: "Seasons — Interview Prep"
+  landing_url: ""         # Semester Pass page — required for tier-2 CTA
+  human_script_review: false
+
+blueprint:
+  accent: amber
+  lane_label: "THE REGULATOR'S QUESTION"
+  trap_slide_type: "Regulator's question"
+
+  # Criteria: British, 35-50, measured, lower pitch, unhurried, authoritative.
+  voice_id: ""            # <-- REQUIRED before Phase 3
+  model_id: ""
+
+  music: assets/music/blueprint_bed.mp3
+  duration_target: [90, 150]
+  duration_warn_below: 60   # short Blueprint == probably flattened. Check the hedges.
+  cta_tier_default: 2
+  playlist: "Blueprints — Banking-Grade AI"
+  landing_url: ""         # cohort info/application page — required for tier-2 CTA
+
+  # MANDATORY. This is the paid-product boundary. Do not set to false.
+  human_script_review: true

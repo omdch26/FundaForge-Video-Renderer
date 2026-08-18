@@ -1,0 +1,47 @@
+paths:
+  # Read-only inputs. Absolute or relative to SYSTEM_ROOT in .env
+  unit_index:     "06_Video_Production/Unit_Index.xlsx"
+  scripts_out:    "03_Scripts_Out"
+  vector_library: "02_Vector_Library"
+  fonts:          "04_Brand_Assets/Fonts"
+  feedback_log:   "06_Video_Production/Carousel_Feedback_Log.md"
+
+  # Writeable — inside this repo only
+  output:         "out"
+  manual_assets:  "assets/manual"
+  music:          "assets/music"
+
+video:
+  width: 1080
+  height: 1920
+  fps: 30
+  codec: h264
+  hard_min_seconds: 20
+  hard_max_seconds: 180      # YouTube Shorts ceiling
+
+  safe_area:                 # px inset — nothing important outside this
+    top: 220                 # clears the YouTube Shorts top chrome
+    bottom: 420              # clears title, channel handle and action rail
+    left: 72
+    right: 160               # clears the right-hand action buttons
+
+audio:
+  music_gain_db: -20
+  music_fade_out_seconds: 2
+  target_wps: [2.2, 2.8]     # words per second; outside this fails G3
+  peak_ceiling_db: -1.0
+
+script:
+  # Slides that must survive compression under all circumstances
+  never_drop_slides: [1, 9]  # the optimised hook, and the trap
+  hook_verbatim: true        # slide 1 header is the opening line, unrewritten
+
+upload:
+  privacy: "private"         # NEVER "public". Publishing is a human action.
+  category: "Education"
+  made_for_kids: false
+
+gates:
+  fidelity: { enabled: true, hard_fail: true }
+  brand:    { enabled: true, hard_fail: true }
+  audio:    { enabled: true, hard_fail: true }

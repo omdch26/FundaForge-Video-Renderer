@@ -1,0 +1,35 @@
+{
+  "_comment": "SINGLE SOURCE OF TRUTH for brand. Python gates and Remotion both read this file. Never hardcode a colour or font name anywhere else. Values are LOCKED upstream in Brand_Guidelines.md section 4 — this file mirrors them, it does not own them.",
+
+  "palette": {
+    "obsidian": "#0B0F17",
+    "slate":    "#1E293B",
+    "white":    "#F8FAFC",
+    "cyan":     "#06B6D4",
+    "amber":    "#F59E0B",
+    "muted":    "#64748B"
+  },
+
+  "semantics": {
+    "amber_means": ["constraint", "warning", "trap", "failure_mode", "regulator_question"],
+    "amber_is_never_decoration": true,
+    "cyan_means": ["software", "theory", "systems", "the_good_path"],
+    "lane_accent": { "season": "cyan", "blueprint": "amber" }
+  },
+
+  "fonts": {
+    "display":      { "family": "Space Grotesk", "files": { "500": "SpaceGrotesk-Medium.ttf", "700": "SpaceGrotesk-Bold.ttf" }, "use": "headlines, wordmark" },
+    "body":         { "family": "Inter", "aliases": ["Inter 24pt"], "files": { "400": "Inter_24pt-Regular.ttf" }, "use": "all body copy" },
+    "chrome_mono":  { "family": "Fira Code", "files": { "400": "FiraCode-Regular.ttf", "700": "FiraCode-Bold.ttf" }, "use": "episode badge, lane label" },
+    "diagram_mono": { "family": "JetBrains Mono", "files": { "400": "JetBrainsMono-Regular.ttf", "700": "JetBrainsMono-Bold.ttf" }, "use": "labels inside SVG diagrams ONLY" }
+  },
+
+  "_font_gotcha": "Inter registers as 'Inter 24pt' on the system, but built SVGs reference plain 'Inter'. Register BOTH names in Remotion or diagram text silently falls back.",
+
+  "banned_imagery": ["stock_photo", "ai_generated_image", "motivational_quote", "headshot"],
+
+  "lane_labels": {
+    "season":    "INTERVIEW TRAP",
+    "blueprint": "THE REGULATOR'S QUESTION"
+  }
+}

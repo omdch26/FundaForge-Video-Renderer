@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FundaForge Shotlist",
+  "description": "THE CONTRACT between the Python pipeline and the Remotion renderer. Python writes it, Remotion consumes it as props. Changing this means changing both sides. Validate on both.",
+  "type": "object",
+  "required": ["unit_id", "lane", "kicker", "accent", "fps", "width", "height", "duration_frames", "audio", "scenes"],
+  "additionalProperties": false,
+  "properties": {
+    "unit_id":       { "type": "string", "pattern": "^(S[1-9]E[0-9]{2}|BP[0-9]{2})$" },
+    "lane":          { "enum": ["season", "blueprint"] },
+    "series":        { "type": "string" },
+    "kicker":        { "type": "string", "description": "Series label shown in the furniture, e.g. MACHINE LEARNING · INTERVIEW FOUNDATIONS" },
+    "accent":        { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "description": "Resolved hex. Cyan for season, amber for blueprint." },
+    "fps":           { "const": 30 },
+    "width":         { "const": 1080 },
+    "height":        { "const": 1920 },
+    "duration_frames": { "type": "integer", "minimum": 600, "maximum": 5400 },
+
+    "source": {
+      "type": "object",
+      "description": "Provenance. Used for drift detection — if csv_sha256 changes, the video is stale.",
+      "required": ["csv_path", "csv_sha256", "generated_at"],
+      "properties": {
+        "csv_path":    { "type": "string" },
+        "csv_sha256":  { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "generated_at":{ "type": "string", "format": "date-time" }
+      }
+    },
+
+    "audio": {
+      "type": "object",
+      "required": ["voice_file", "voice_id", "model_id"],
+      "properties": {
+        "voice_file": { "type": "string" },
+        "voice_id":   { "type": "string", "description": "Pinned. Recorded so episode 40 can be checked against episode 1." },
+        "model_id":   { "type": "string" },
+        "music_file": { "type": "string" },
+        "music_gain_db": { "type": "number", "maximum": 0 }
+      }
+    },
+
+    "captions": {
+      "type": "array",
+      "description": "Word-level, derived from ElevenLabs character timestamps. NOT from Whisper — we already know the words.",
+      "items": {
+        "type": "object",
+        "required": ["text", "start_frame", "end_frame"],
+        "properties": {
+          "text":        { "type": "string" },
+          "start_frame": { "type": "integer", "minimum": 0 },
+          "end_frame":   { "type": "integer", "minimum": 0 },
+          "emphasis":    { "enum": ["none", "accent", "constraint"], "default": "none",
+                           "description": "constraint renders amber and is ONLY valid on constraint/trap/failure words. The brand gate enforces this." }
+        }
+      }
+    },
+
+    "scenes": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["scene_id", "card", "start_frame", "duration_frames", "slide_refs"],
+        "additionalProperties": false,
+        "properties": {
+          "scene_id":        { "type": "integer", "minimum": 1 },
+          "card":            { "enum": ["TitleCard", "BodyCard", "DiagramCard", "TrapCard", "CTACard"] },
+          "start_frame":     { "type": "integer", "minimum": 0 },
+          "duration_frames": { "type": "integer", "minimum": 15 },
+          "slide_refs":      { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 10 },
+                               "description": "Which source slides this scene draws from. Used by the fidelity gate for coverage." },
+
+          "headline":  { "type": "string" },
+          "body":      { "type": "string" },
+          "kicker_visible": { "type": "boolean", "default": true },
+
+          "asset": {
+            "type": "object",
+            "description": "Resolved visual. Absent means a type-only card, which is always a valid fallback.",
+            "properties": {
+              "kind":     { "enum": ["svg_library", "svg_local", "manual_drop"] },
+              "path":     { "type": "string" },
+              "slot":     { "type": "string", "description": "Manual-drop slot name, e.g. BP34_s07_split" },
+              "animate":  { "enum": ["none", "draw", "reveal", "scale_in"], "default": "reveal" },
+              "strip_backing_rect": { "type": "boolean", "default": true,
+                                      "description": "Library SVGs carry an opaque #0B0F17 rect. Strip it or it punches a black hole through the card." }
+            }
+          },
+
+          "amber_spans": {
+            "type": "array",
+            "description": "Character ranges in headline/body to render amber. ONLY for constraint, warning, trap or failure. Gate-enforced.",
+            "items": {
+              "type": "object",
+              "required": ["field", "start", "end", "reason"],
+              "properties": {
+                "field":  { "enum": ["headline", "body"] },
+                "start":  { "type": "integer", "minimum": 0 },
+                "end":    { "type": "integer", "minimum": 0 },
+                "reason": { "enum": ["constraint", "warning", "trap", "failure_mode", "regulator_question"] }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "cta": {
+      "type": "object",
+      "required": ["tier"],
+      "properties": {
+        "tier":       { "enum": [1, 2, 3] },
+        "spoken":     { "type": "string" },
+        "on_screen":  { "type": "string" },
+        "next_unit":  { "type": ["string", "null"] },
+        "_note":      { "type": "string", "default": "No Instagram references. No comment keywords. Those do not port." }
+      }
+    }
+  }
+}

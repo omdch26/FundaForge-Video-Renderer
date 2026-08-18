@@ -1,0 +1,23 @@
+{
+  "name": "fundaforge-video-renderer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Remotion render engine. Driven by the Python pipeline — not used standalone.",
+  "scripts": {
+    "sync-fonts": "node scripts/sync-fonts.mjs",
+    "dev": "npm run sync-fonts && remotion studio src/index.ts",
+    "dummy": "npm run sync-fonts && remotion render src/index.ts Short ../out/_phase1_dummy.mp4",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "remotion": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1",
+    "typescript": "^5.5.0"
+  }
+}
