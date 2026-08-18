@@ -19,6 +19,11 @@ import type { CardProps } from "../types";
  * strip_backing_rect mirrors batch_render_season.py: every library asset carries
  * an opaque #0B0F17 rectangle, which punches a black hole through the card
  * unless removed.
+ *
+ * dangerouslySetInnerHTML is used deliberately here, not by oversight: these
+ * SVGs are trusted, in-house-authored assets read from the local read-only
+ * vector library (D:\System_Synthesis\02_Vector_Library), never user-supplied
+ * content, so sanitizing them would add cost without a real threat model.
  */
 const stripBackingRect = (svg: string): string => {
   // Matched against brand.json rather than a literal, so the palette stays the
@@ -28,7 +33,53 @@ const stripBackingRect = (svg: string): string => {
   return svg.replace(rect, "");
 };
 
-export const DiagramCard: React.FC<CardProps> = ({ headline, asset, accent }) => {
+// The inlined markup carries its own explicit width/height attributes, which
+// override a CSS width:100% on the outer wrapper in some browsers. Stripping
+// them (viewBox is untouched, so aspect ratio is preserved) lets our own
+// container control the final scale.
+const stripFixedDimensions = (svg: string): string =>
+  svg.replace(/(<svg\b[^>]*)\swidth="\d+"\s+height="\d+"/, "$1");
+
+// The library's diagrams are all 824x420 (landscape, ~1.96:1), built for a
+// 4:5 carousel slide. A 9:16 frame needs a deliberate fit strategy — this was
+// previously implicit (intrinsic size inside a flex container), which is why
+// it's called out explicitly here rather than left to chance.
+type FitMode = "letterbox" | "crop" | "bleed";
+
+const SOURCE_ASPECT = 824 / 420;
+
+const containerStyleFor = (mode: FitMode): React.CSSProperties => {
+  const base: React.CSSProperties = {
+    marginTop: 48,
+    background: PALETTE.slate,
+    borderRadius: 20,
+    overflow: "hidden",
+    width: "100%",
+    position: "relative",
+  };
+  if (mode === "letterbox") {
+    // Fit width; obsidian fill shows above/below the SVG's own aspect ratio.
+    return { ...base, aspectRatio: `${SOURCE_ASPECT}`, backgroundColor: PALETTE.obsidian };
+  }
+  if (mode === "crop") {
+    // Fit a taller target box; overflow hidden crops left/right edges.
+    return { ...base, aspectRatio: "3 / 4" };
+  }
+  // bleed: fit width exactly to the SVG's own ratio, card padding is the only frame.
+  return { ...base, aspectRatio: `${SOURCE_ASPECT}` };
+};
+
+const svgWrapperStyleFor = (mode: FitMode): React.CSSProperties => {
+  if (mode === "crop") {
+    // Scale so the SVG's height fills the taller 3:4 box, center-crop the width.
+    return { width: "auto", height: "100%", position: "absolute", left: "50%", transform: "translateX(-50%)" };
+  }
+  return { width: "100%", height: "100%" };
+};
+
+export const DiagramCard: React.FC<CardProps & { fitMode?: FitMode }> = ({
+  headline, asset, accent, fitMode = "letterbox",
+}) => {
   const [svg, setSvg] = useState<string | null>(null);
   const [handle] = useState(() => delayRender("Loading diagram SVG"));
 
@@ -43,7 +94,8 @@ export const DiagramCard: React.FC<CardProps> = ({ headline, asset, accent }) =>
     fetch(staticFile(asset.path))
       .then((r) => r.text())
       .then((text) => {
-        setSvg(asset.strip_backing_rect === false ? text : stripBackingRect(text));
+        const stripped = asset.strip_backing_rect === false ? text : stripBackingRect(text);
+        setSvg(stripFixedDimensions(stripped));
         continueRender(handle);
       })
       .catch((e) => cancelRender(e));
@@ -59,23 +111,21 @@ export const DiagramCard: React.FC<CardProps> = ({ headline, asset, accent }) =>
 
       <div
         style={{
-          marginTop: 48,
-          background: PALETTE.slate,
-          borderRadius: 20,
-          borderLeft: `4px solid ${accent}`,
-          padding: 36,
+          ...containerStyleFor(fitMode),
+          borderLeft: fitMode === "bleed" ? `4px solid ${accent}` : undefined,
           ...riseIn(fig, 24),
         }}
       >
         {svg ? (
           <div
-            style={{ width: "100%" }}
-            // Library SVGs are our own, authored in-house and read-only.
+            style={svgWrapperStyleFor(fitMode)}
+            // Library diagrams are trusted, in-house-authored assets read from
+            // the local read-only vector folder, matching the original
+            // component's own established pattern for this card.
             dangerouslySetInnerHTML={{ __html: svg }}
           />
         ) : (
-          // A missing asset must never block a render — see assets.py fallback rules.
-          <div style={{ ...css(TYPE.body), color: PALETTE.muted }}>
+          <div style={{ ...css(TYPE.body), color: PALETTE.muted, padding: 36 }}>
             [diagram unavailable — rendering type-only]
           </div>
         )}

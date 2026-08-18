@@ -1,0 +1,28 @@
+{
+  "unit_id": "T1_TEST",
+  "lane": "season",
+  "series": "Season 1",
+  "kicker": "MACHINE LEARNING · INTERVIEW FOUNDATIONS",
+  "accent": "#06B6D4",
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "duration_frames": 90,
+  "audio": { "voice_file": null, "music_file": null, "music_gain_db": -20 },
+  "scenes": [
+    {
+      "scene_id": 1,
+      "card": "DiagramCard",
+      "start_frame": 0,
+      "duration_frames": 90,
+      "slide_refs": [4],
+      "headline": "Three kinds of drift.",
+      "asset": {
+        "kind": "svg_library",
+        "path": "diagrams/Drift_Types_Three.svg",
+        "strip_backing_rect": true
+      }
+    }
+  ],
+  "cta": { "tier": 1, "on_screen": "FOLLOW FOR THE NEXT ONE", "next_unit": null }
+}
