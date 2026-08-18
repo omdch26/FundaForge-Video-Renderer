@@ -17,6 +17,17 @@ node_modules/
 remotion/node_modules/
 .remotion/
 
+# Render-time asset sync targets — copied fresh into remotion/public/ by
+# render_unit()/sync-fonts.mjs from their real source (04_Brand_Assets/Fonts,
+# 02_Vector_Library, assets/music/) on every render. Not source of truth.
+# (Drift_Types_Three.svg predates this rule, from a one-off manual copy
+# during the Remotion bring-up — left tracked rather than retroactively
+# untracked.)
+remotion/public/fonts/
+remotion/public/assets/
+remotion/public/diagrams/*.svg
+!remotion/public/diagrams/Drift_Types_Three.svg
+
 # Generated output — regenerable, and large
 out/
 !out/.gitkeep
