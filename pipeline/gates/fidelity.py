@@ -91,17 +91,42 @@ def check(unit, script: dict) -> list[Finding]:
     """
     findings: list[Finding] = []
 
+    scenes = script.get("scenes", [])
     source_text = " ".join(f"{s.header_text} {s.body_text}" for s in unit.slides)
-    script_text = " ".join(sc.get("voiceover", "") for sc in script.get("scenes", []))
+    script_text = " ".join(sc.get("voiceover", "") for sc in scenes)
 
-    # --- 1. Hedge preservation. Hard fail. --------------------------------
-    src_hedges = _markers_present(source_text, HEDGE_MARKERS)
-    scr_hedges = _markers_present(script_text, HEDGE_MARKERS)
-    if src_hedges and not scr_hedges:
-        findings.append(Finding(
-            "fail", "HEDGE_DROPPED",
-            f"Source hedges ({sorted(src_hedges)}) but the script carries none. "
-            f"Compression has turned a qualified claim into a flat rule."))
+    # --- 1. Hedge preservation, PER SLIDE. Hard fail. ----------------------
+    # Fixed 18 Aug 2026. Was a single whole-script check: "does hedge language
+    # exist anywhere in the source, and anywhere in the script." That let one
+    # slide's flattened hedge hide behind any OTHER slide that still hedged
+    # normally — confirmed via testing that a script flattening ONLY slide 4
+    # ("retention usually wins, narrowly" -> "retention wins") passed silently
+    # whenever some other slide (e.g. slide 9) still carried hedge language.
+    # Every slide with its own source hedge now gets its own check, using the
+    # same "look only at the scene(s) covering this slide" approach the old
+    # trap-only check already used correctly — just generalised to all ten.
+    for slide in unit.slides:
+        slide_hedges = _markers_present(f"{slide.header_text} {slide.body_text}", HEDGE_MARKERS)
+        if not slide_hedges:
+            continue
+
+        covering = [sc for sc in scenes if slide.slide_number in sc.get("slide_refs", [])]
+        if not covering:
+            continue  # SLIDE_UNCOVERED (below) already reports missing coverage
+
+        covering_text = " ".join(sc.get("voiceover", "") for sc in covering)
+        if not _markers_present(covering_text, HEDGE_MARKERS):
+            if slide.slide_number == 9:
+                findings.append(Finding(
+                    "fail", "TRAP_FLATTENED",
+                    f"Slide 9 hedges ({sorted(slide_hedges)}) but its scene states a flat "
+                    f"position. This is the single most damaging failure mode in the pipeline."))
+            else:
+                findings.append(Finding(
+                    "fail", "HEDGE_DROPPED",
+                    f"Slide {slide.slide_number} hedges ({sorted(slide_hedges)}) but its "
+                    f"scene carries none. Compression has turned a qualified claim into a "
+                    f"flat rule."))
 
     # --- 2. Flattening language that the source never used. Hard fail. ----
     introduced = _markers_present(script_text, FLATTENING_MARKERS) - _markers_present(source_text, FLATTENING_MARKERS)
@@ -110,19 +135,12 @@ def check(unit, script: dict) -> list[Finding]:
             "fail", "ABSOLUTE_INTRODUCED",
             f"Script introduces absolutes the source avoids: {sorted(introduced)}."))
 
-    # --- 3. The trap slide must survive intact. Hard fail. ----------------
-    trap = unit.trap_slide
-    trap_hedges = _markers_present(f"{trap.header_text} {trap.body_text}", HEDGE_MARKERS)
-    trap_scenes = [sc for sc in script.get("scenes", []) if 9 in sc.get("slide_refs", [])]
+    # --- 3. The trap slide must be present at all. Hard fail. -------------
+    # Flattening is now caught above, per-slide, same as every other slide —
+    # this only confirms slide 9 has a scene covering it in the first place.
+    trap_scenes = [sc for sc in scenes if 9 in sc.get("slide_refs", [])]
     if not trap_scenes:
         findings.append(Finding("fail", "TRAP_MISSING", "Slide 9 is not covered by any scene."))
-    elif trap_hedges:
-        trap_script = " ".join(sc.get("voiceover", "") for sc in trap_scenes)
-        if not _markers_present(trap_script, HEDGE_MARKERS):
-            findings.append(Finding(
-                "fail", "TRAP_FLATTENED",
-                f"Slide 9 hedges ({sorted(trap_hedges)}) but its scene states a flat position. "
-                f"This is the single most damaging failure mode in the pipeline."))
 
     # --- 4. Hook must be verbatim. Hard fail. -----------------------------
     # Slide 1 hooks are 4-6 words, written for a cold scroll at thumbnail size,

@@ -100,3 +100,52 @@ def test_clean_shotplan_passes(tmp_path, capsys):
     out = capsys.readouterr().out
     assert exit_code == 0
     assert "human" in out.lower()  # sign-off notice always prints, even on a clean pass
+
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+def test_full_bad_fixture_catches_hedge_dropped_per_slide(tmp_path, capsys):
+    """Regression test, added 18 Aug 2026.
+
+    The committed tests/fixtures/BP34_shotplan_bad_example.json fixture only
+    flattens slide 4 ("Retention wins." for "Retention usually wins,
+    narrowly...") — every other scene is otherwise faithful, and several
+    (slides 2, 5, 8, 10) legitimately use words that ARE in HEDGE_MARKERS
+    ("no clean resolution", "partial", "no easy answer"). Proven empirically
+    on 18 Aug 2026: under the old whole-script HEDGE_DROPPED check, those
+    other scenes' hedge language satisfied the check, so slide 4's flattening
+    went completely uncaught and the fixture passed the entire gate suite —
+    exit_code 0 — despite being the exact failure mode this gate exists to
+    prevent. This test is the permanent proof that regression doesn't happen
+    again; if it ever goes green without HEDGE_DROPPED specifically present,
+    the per-slide fix has been undone.
+    """
+    fixture = json.loads((FIXTURES_DIR / "BP34_shotplan_bad_example.json").read_text(encoding="utf-8"))
+    (tmp_path / "BP34_shotplan.json").write_text(json.dumps(fixture), encoding="utf-8")
+
+    cfg = cfgmod.load()
+    exit_code = produce.validate_shotplan(cfg, "BP34", shotplans_dir=tmp_path)
+
+    out = capsys.readouterr().out
+    assert exit_code != 0
+    assert "HEDGE_DROPPED" in out
+    assert "Slide 4" in out  # the specific slide, not a whole-script proxy
+    assert "POSSIBLE_FABRICATION" in out
+    assert "eleven years" in out
+    assert "leveraging" in out.lower()
+
+
+def test_full_clean_fixture_passes_cleanly(tmp_path, capsys):
+    """Companion to the above — the committed clean fixture, same 10-slide
+    shape, faithful throughout, must pass with zero fail-severity findings."""
+    fixture = json.loads((FIXTURES_DIR / "BP34_shotplan_clean_example.json").read_text(encoding="utf-8"))
+    (tmp_path / "BP34_shotplan.json").write_text(json.dumps(fixture), encoding="utf-8")
+
+    cfg = cfgmod.load()
+    exit_code = produce.validate_shotplan(cfg, "BP34", shotplans_dir=tmp_path)
+
+    out = capsys.readouterr().out
+    assert exit_code == 0
+    assert "HEDGE_DROPPED" not in out
+    assert "TRAP_FLATTENED" not in out
