@@ -10,13 +10,16 @@ import { staticFile } from "remotion";
  * label text silently falls back to a substitute face.
  */
 export const registerFonts = (): void => {
-  const face = (family: string, file: string, weight = 400) => `
+  const face = (family: string, file: string, weight = 400) => {
+    console.log(`[fonts] registering "${family}" (weight ${weight}) from ${file}`);
+    return `
     @font-face {
       font-family: "${family}";
       src: url("${staticFile(`fonts/${file}`)}") format("truetype");
       font-weight: ${weight};
       font-display: block;
     }`;
+  };
 
   const css = [
     face("Space Grotesk", "SpaceGrotesk-Medium.ttf", 500),
@@ -32,4 +35,5 @@ export const registerFonts = (): void => {
   const el = document.createElement("style");
   el.textContent = css;
   document.head.appendChild(el);
+  console.log(`[fonts] ${css.split("@font-face").length - 1} font-face rules injected`);
 };
