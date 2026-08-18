@@ -1,0 +1,121 @@
+{
+  "unit_id": "BP34",
+  "lane": "blueprint",
+  "series": "Arc 3",
+  "kicker": "BANKING-GRADE AI · ARC 3 · LINEAGE AND SOVEREIGNTY",
+  "accent": "#F59E0B",
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "duration_frames": 2700,
+  "audio": {
+    "voice_file": null,
+    "voice_id": "1aP69VftkGksPi01itpR",
+    "model_id": "eleven_multilingual_v2",
+    "music_file": "assets/music/blueprint_bed.mp3",
+    "music_gain_db": -20
+  },
+  "scenes": [
+    {
+      "scene_id": 1,
+      "card": "TitleCard",
+      "start_frame": 0,
+      "duration_frames": 240,
+      "slide_refs": [1],
+      "headline": "Delete me. The bank cannot.",
+      "body": "A customer exercises erasure. A separate obligation requires the bank to keep transaction records for years. Both are law, and they point opposite ways."
+    },
+    {
+      "scene_id": 2,
+      "card": "BodyCard",
+      "start_frame": 240,
+      "duration_frames": 240,
+      "slide_refs": [2],
+      "headline": "This conflict has no clean resolution.",
+      "body": "Every other blueprint in this arc has an answer. This one has a position you take, document, and defend, which is a different kind of engineering."
+    },
+    {
+      "scene_id": 3,
+      "card": "DiagramCard",
+      "start_frame": 480,
+      "duration_frames": 270,
+      "slide_refs": [3],
+      "headline": "Two duties, pulling apart.",
+      "body": "The right to erasure on one side. Financial crime, tax and audit retention on the other. Between them a set of records that must both go and stay.",
+      "asset": {
+        "kind": "svg_library",
+        "path": "diagrams/Erasure_Versus_Retention.svg",
+        "strip_backing_rect": true
+      }
+    },
+    {
+      "scene_id": 4,
+      "card": "BodyCard",
+      "start_frame": 750,
+      "duration_frames": 270,
+      "slide_refs": [4],
+      "headline": "Retention wins.",
+      "body": "The bank must keep every record for exactly eleven years, leveraging a fast, reliable, and scalable archive to do it."
+    },
+    {
+      "scene_id": 5,
+      "card": "BodyCard",
+      "start_frame": 1020,
+      "duration_frames": 270,
+      "slide_refs": [5],
+      "headline": "Which means erasure becomes partial.",
+      "body": "Delete the marketing profile, the derived features and the model influence. Keep the transaction ledger. Explaining that split to the customer is part of the work."
+    },
+    {
+      "scene_id": 6,
+      "card": "BodyCard",
+      "start_frame": 1290,
+      "duration_frames": 240,
+      "slide_refs": [6],
+      "headline": "Retention is not permission to use.",
+      "body": "A record kept for audit may not quietly remain a training feature. The lawful basis for keeping it is narrower than the basis for holding it originally."
+    },
+    {
+      "scene_id": 7,
+      "card": "BodyCard",
+      "start_frame": 1530,
+      "duration_frames": 270,
+      "slide_refs": [7],
+      "headline": "Keeping everything is the unsafe default.",
+      "body": "Retaining beyond the statutory period converts a defence into a liability. The schedule has an end date, and honouring it is as much an obligation as keeping it."
+    },
+    {
+      "scene_id": 8,
+      "card": "DiagramCard",
+      "start_frame": 1800,
+      "duration_frames": 240,
+      "slide_refs": [8],
+      "headline": "The conflict, one picture.",
+      "body": "There is no architecture that dissolves this. There is a documented position, and this diagram is where it gets drawn.",
+      "asset": {
+        "kind": "svg_library",
+        "path": "diagrams/Erasure_Versus_Retention.svg",
+        "strip_backing_rect": true
+      }
+    },
+    {
+      "scene_id": 9,
+      "card": "TrapCard",
+      "start_frame": 2040,
+      "duration_frames": 330,
+      "slide_refs": [9],
+      "headline": "Reconcile erasure with seven-year retention.",
+      "body": "Name which records are retained under which duty, what was deleted, and who approved the split. Answers claiming full erasure have not read the retention rules."
+    },
+    {
+      "scene_id": 10,
+      "card": "CTACard",
+      "start_frame": 2370,
+      "duration_frames": 330,
+      "slide_refs": [10],
+      "headline": "It has no easy answer.",
+      "body": "The hardest problem in this arc, and the one most likely to come up in a real assessment."
+    }
+  ],
+  "cta": { "tier": 2, "on_screen": "FOLLOW FOR THE NEXT ONE", "next_unit": null }
+}
