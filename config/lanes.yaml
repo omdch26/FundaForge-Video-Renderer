@@ -22,6 +22,20 @@ season:
   # "Human script review" under LOCKED DECISIONS.
   human_script_review: true
 
+  # Per Sri (19 Aug 2026) — base tag set for every Season description, in
+  # priority order (YouTube only surfaces the first 3 above the title in
+  # search/browse, so order matters). pipeline/metadata.py appends #Shorts
+  # on top of this list; it does not live here since it's lane-independent.
+  youtube_tags:
+    - "#MachineLearning"
+    - "#AIInterview"
+    - "#DataScience"
+    - "#EngineeringStudents"
+    - "#PlacementPrep"
+    - "#FundaForge"
+    - "#SystemsThinking"
+    - "#TechInterviews"
+
 blueprint:
   accent: amber
   lane_label: "THE REGULATOR'S QUESTION"
@@ -40,3 +54,18 @@ blueprint:
 
   # MANDATORY. This is the paid-product boundary. Do not set to false.
   human_script_review: true
+
+  # Per Sri (19 Aug 2026) — as given, deduped (source list repeated
+  # #DataScience). Same ordering/#Shorts rule as season's list above.
+  youtube_tags:
+    - "#BankingAI"
+    - "#AIGovernance"
+    - "#ModelRisk"
+    - "#RegulatoryCompliance"
+    - "#MachineLearning"
+    - "#FinTech"
+    - "#DataScience"
+    - "#FundaForge"
+    - "#PlacementPrep"
+    - "#AIInterview"
+    - "#TechInterviews"

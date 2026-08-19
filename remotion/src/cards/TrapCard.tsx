@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { PALETTE } from "../brand";
 import { SAFE_PADDING, TYPE, css } from "../layout";
-import { useEnter, riseIn, snapIn, drawRule, EASE_SNAP } from "../motion";
+import { useEnter, riseIn, snapIn, drawRule, EASE_SNAP, usePulse, withAlpha } from "../motion";
 import { AmberText } from "./AmberText";
 import type { CardProps } from "../types";
 
@@ -23,11 +23,18 @@ export const TrapCard: React.FC<CardProps> = ({ headline, body, laneLabel, amber
   const rule = useEnter(4, 16);
   const question = useEnter(8, 14);
   const answer = useEnter(34, 16); // the beat
+  // Per Sri (19 Aug 2026, "more movement"): a quicker, more urgent breathing
+  // glow than the diagram's — amber is already the system's one signal
+  // colour, so giving it slightly more energy here reinforces the read
+  // rather than introducing a new one. Bar only, never the question/answer
+  // text — same restraint rule as everywhere else in this pass.
+  const labelGlow = usePulse(65, 0.18, 0.42);
 
   return (
     <AbsoluteFill style={{ padding: SAFE_PADDING, justifyContent: "center" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 18, ...snapIn(label) }}>
-        <div style={{ width: 6, height: 34, background: PALETTE.amber }} />
+        <div style={{ width: 6, height: 34, background: PALETTE.amber,
+                      boxShadow: `0 0 20px ${withAlpha(PALETTE.amber, labelGlow)}` }} />
         <span style={{ ...css(TYPE.label), color: PALETTE.amber, letterSpacing: 2 }}>
           {laneLabel}
         </span>

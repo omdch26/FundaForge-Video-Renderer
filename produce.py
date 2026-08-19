@@ -29,6 +29,7 @@ import jsonschema
 
 from pipeline import audio as audiomod
 from pipeline import config as cfgmod
+from pipeline import metadata as metadatamod
 from pipeline import source
 from pipeline.gates import audio_gate, brand, fidelity, humanization
 
@@ -292,27 +293,21 @@ def render_unit(unit_id: str, shotplan_path: Path) -> Path:
     version = next_draft_version(unit_id)
     output_path = (REPO_ROOT / "out" / "drafts" / unit_id / f"{unit_id}_v{version}.mp4")
 
-    # On Windows, npm/npx resolve to .CMD shims, which subprocess.run cannot
-    # locate via a bare name without a shell. Resolve the real executable
-    # path with shutil.which and keep passing args as a list (never
-    # shell-invoked) — safe here regardless, since every arg below is a
-    # fixed literal or a resolved Path, not external input.
-    npm = shutil.which("npm")
-    if not npm:
-        raise RuntimeError("npm not found on PATH — Node.js must be installed to render.")
-    npx = shutil.which("npx")
-    if not npx:
-        raise RuntimeError("npx not found on PATH — Node.js must be installed to render.")
-
+    npm_exe = shutil.which("npm")
+    if npm_exe is None:
+        raise RuntimeError("npm not found on PATH")
     sync_fonts = subprocess.run(
-        [npm, "run", "sync-fonts"], cwd=REMOTION_DIR,
+        [npm_exe, "run", "sync-fonts"], cwd=REMOTION_DIR,
         capture_output=True, text=True,
     )
     if sync_fonts.returncode != 0:
         raise RuntimeError(f"sync-fonts failed:\n{sync_fonts.stdout}\n{sync_fonts.stderr}")
 
+    npx_exe = shutil.which("npx")
+    if npx_exe is None:
+        raise RuntimeError("npx not found on PATH")
     cmd = [
-        npx, "remotion", "render", "src/index.ts", "Short",
+        npx_exe, "remotion", "render", "src/index.ts", "Short",
         str(output_path.resolve()),
         f"--props={shotplan_path.resolve()}",
     ]
@@ -386,6 +381,24 @@ def run_unit(cfg, unit_id: str, *, confirmed: bool = False,
     print(f"  This is a DRAFT for review, not an approved final. Watch it, then say "
           f"what to fix, or that it's good — approved output is a separate step, "
           f"never automatic.")
+
+    # Per Sri (19 Aug 2026): draft YouTube upload metadata alongside every
+    # render, same folder as the video. Never blocks the render on failure —
+    # the video is the primary artifact; metadata is a review-and-paste-in
+    # convenience on top of it, not a gate. Write-once per file (19 Aug 2026,
+    # follow-up): a later re-render (v2, v3, ...) never overwrites a .txt Sri
+    # may have already opened and hand-edited — see metadata.write_metadata's
+    # own docstring.
+    try:
+        meta_results = metadatamod.write_metadata(shotplan, cfg, output_path.parent)
+        print(f"\n  YouTube metadata (review before pasting into Studio "
+              f"— nothing here has been uploaded, published, or sent):")
+        for label, result in meta_results.items():
+            status = "written" if result.written else "already exists, left as-is"
+            print(f"    {label:15s} -> {result.path}  [{status}]")
+    except Exception as e:
+        print(f"\n  [WARN] metadata drafting failed, video draft is unaffected: {e}")
+
     return 0
 
 

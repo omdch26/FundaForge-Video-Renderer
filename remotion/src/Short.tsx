@@ -3,6 +3,7 @@ import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
 import { PALETTE, LANE_LABELS } from "./brand";
 import { registerFonts } from "./fonts";
 import { Furniture } from "./cards/Furniture";
+import { PencilScribble, FolderUnfold } from "./cards/CornerAnimation";
 import { Captions } from "./cards/Captions";
 import { TitleCard } from "./cards/TitleCard";
 import { BodyCard } from "./cards/BodyCard";
@@ -36,7 +37,14 @@ export const Short: React.FC<Shotlist> = (props) => {
         );
       })}
 
-      <Furniture kicker={kicker} unitId={unit_id} accent={accent} lane={lane} />
+      <Furniture kicker={kicker} unitId={unit_id} accent={accent} lane={lane} scenes={scenes} />
+
+      {/* Per Sri (19 Aug 2026): one animated corner motif, continuous for the
+          whole video, different per lane — see CornerAnimation.tsx for why
+          this is an explicit exception to the "no mascot" call. */}
+      {lane === "season"
+        ? <PencilScribble accent={accent} />
+        : <FolderUnfold accent={accent} />}
 
       {captions?.length ? <Captions captions={captions} accent={accent} /> : null}
 

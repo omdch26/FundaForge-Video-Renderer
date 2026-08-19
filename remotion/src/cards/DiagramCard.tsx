@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AbsoluteFill, cancelRender, continueRender, delayRender, staticFile } from "remotion";
 import { PALETTE } from "../brand";
 import { SAFE_PADDING, TYPE, css } from "../layout";
-import { useEnter, riseIn, wipeIn, scaleIn } from "../motion";
+import { useEnter, riseIn, wipeIn, scaleIn, usePulse, withAlpha } from "../motion";
 import type { CardProps } from "../types";
 
 /**
@@ -109,6 +109,13 @@ export const DiagramCard: React.FC<CardProps & { fitMode?: FitMode }> = ({
   const fig = useEnter(8, 22);
   const drawP = useEnter(14, 40);   // only used when asset.animate === "draw"
   const scaleP = useEnter(8, 26);   // only used when asset.animate === "scale_in"
+  // Per Sri (19 Aug 2026, "more movement"): a slow, low-amplitude glow once
+  // the diagram has settled — the "save this" payoff slide sitting
+  // completely static for its remaining seconds on screen was the flattest
+  // moment in the video. Runs continuously under the entrance, not gated on
+  // it finishing — at this amplitude/period it reads as ambient, not as a
+  // second animation competing with the reveal.
+  const glow = usePulse(110, 0.14, 0.24);
 
   const animateMode = asset?.animate ?? "reveal";
   const svgMotionStyle: React.CSSProperties =
@@ -143,6 +150,7 @@ export const DiagramCard: React.FC<CardProps & { fitMode?: FitMode }> = ({
         style={{
           ...containerStyleFor(fitMode),
           borderLeft: fitMode === "bleed" ? `4px solid ${accent}` : undefined,
+          boxShadow: `0 0 44px ${withAlpha(accent, glow)}`,
           ...riseIn(fig, 24),
         }}
       >

@@ -18,7 +18,7 @@ export const TYPE = {
   label:    { size: 26,  line: 1.2,  weight: 700, family: "Fira Code" },
   badge:    { size: 30,  line: 1.2,  weight: 400, family: "Fira Code" },
   kicker:   { size: 20,  line: 1.2,  weight: 400, family: "Fira Code" },
-  caption:  { size: 46,  line: 1.2,  weight: 600, family: "Inter" },
+  caption:  { size: 34,  line: 1.2,  weight: 600, family: "Inter" },
 } as const;
 
 export const css = (t: typeof TYPE[keyof typeof TYPE]) => ({

@@ -70,3 +70,30 @@ export const useExit = (durationInFrames: number, frames = 8): number => {
 
 /** Stagger helper: nth element enters `step` frames after the first. */
 export const stagger = (n: number, step = 5) => n * step;
+
+/**
+ * Per Sri (19 Aug 2026): "more movement, more catchy" for the Shorts, without
+ * a mascot/character (ruled out — collides with the "no bounce, no overshoot"
+ * rule above, and with the no-AI-imagery ban if it were ever generated rather
+ * than hand-drawn). These two helpers are the toolkit for the alternative
+ * that was agreed instead: more motion from the EXISTING restrained
+ * vocabulary — continuous, low-amplitude, sine-based "breathing" rather than
+ * anything springy — applied to accents, glows and captions, never to body
+ * copy itself.
+ */
+
+/** A smooth, continuous oscillation — for an idle "breathing" glow/pulse on
+ * an accent element, never on body text. Deliberately sine-based (no ease
+ * curve, no settle point) so it reads as ambient life, not an entrance. */
+export const usePulse = (period = 90, amplitude = 0.15, base = 0.35, phaseFrames = 0): number => {
+  const frame = useCurrentFrame();
+  return base + amplitude * Math.sin(((frame + phaseFrames) / period) * Math.PI * 2);
+};
+
+/** Appends an alpha channel to a 6-digit brand hex colour (e.g. from
+ * PALETTE), for glows/shadows that need to fade in and out with usePulse.
+ * Chromium (Remotion's render target) supports 8-digit #RRGGBBAA. */
+export const withAlpha = (hex: string, alpha: number): string => {
+  const a = Math.round(Math.max(0, Math.min(1, alpha)) * 255).toString(16).padStart(2, "0");
+  return `${hex}${a}`;
+};
